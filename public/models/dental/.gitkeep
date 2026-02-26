@@ -1,0 +1,9 @@
+# This folder will contain the trained TensorFlow.js model
+# 
+# After training your model, run:
+#   python model_training/convert_to_tfjs.py --model trained_model/efficientnet_best.keras --output public/models/dental
+#
+# The following files will be created:
+#   - model.json (model architecture)
+#   - group1-shard*.bin (model weights)
+#   - metadata.json (class names and preprocessing info)

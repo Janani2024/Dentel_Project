@@ -1,0 +1,23 @@
+{
+  "name": "dental-disease-detector",
+  "version": "1.0.0",
+  "modelPath": "model.json",
+  "inputShape": [
+    224,
+    224,
+    3
+  ],
+  "classNames": [
+    "calculus",
+    "cavity",
+    "discoloration",
+    "gingivitis",
+    "healthy",
+    "hypodontia",
+    "ulcer"
+  ],
+  "preprocessing": {
+    "rescale": true,
+    "normalize": "efficientnet"
+  }
+}
