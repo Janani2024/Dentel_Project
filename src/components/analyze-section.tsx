@@ -19,6 +19,7 @@ import {
   OralHealthReport,
 } from "@/lib/report-generator";
 import { addToHistory, type HistoryItem } from "@/lib/history-storage";
+import { saveAnalysisToHistory, uploadImage } from "@/lib/supabase";
 
 interface AnalyzeSectionProps {
   selectedHistoryItem?: HistoryItem | null;
@@ -116,7 +117,7 @@ export default function AnalyzeSection({ selectedHistoryItem }: AnalyzeSectionPr
       const healthReport = generateOralHealthReport(result);
       setReport(healthReport);
 
-      // Save to history
+      // Save to localStorage history
       if (preview && healthReport) {
         addToHistory({
           image: preview,
@@ -128,6 +129,34 @@ export default function AnalyzeSection({ selectedHistoryItem }: AnalyzeSectionPr
           healthScore: healthReport.healthScore,
           healthGrade: healthReport.healthGrade,
         });
+      }
+
+      // Save to Supabase (cloud)
+      if (preview && healthReport && result) {
+        try {
+          // Convert base64 preview to File for upload
+          const res = await fetch(preview);
+          const blob = await res.blob();
+          const file = new File([blob], `dental-${Date.now()}.jpg`, { type: blob.type });
+
+          // Upload image to Supabase storage
+          const { url: imageUrl } = await uploadImage(file);
+
+          // Save analysis record to Supabase database
+          await saveAnalysisToHistory(
+            imageUrl || preview,
+            healthReport.healthScore,
+            result.primaryCondition,
+            {
+              healthGrade: healthReport.healthGrade,
+              findings: healthReport.findings,
+              recommendations: healthReport.recommendations,
+              mode: currentMode,
+            }
+          );
+        } catch (err) {
+          console.warn("Supabase save failed (non-critical):", err);
+        }
       }
     } catch (err) {
       console.error("Analysis error:", err);
