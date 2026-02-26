@@ -16,6 +16,7 @@ import {
   formatTimestamp,
   type HistoryItem,
 } from "@/lib/history-storage";
+import { getAnalysisHistory } from "@/lib/supabase";
 
 interface HistorySectionProps {
   onSelectHistory: (item: HistoryItem) => void;
@@ -29,9 +30,34 @@ export default function HistorySection({ onSelectHistory }: HistorySectionProps)
     loadHistory();
   }, []);
 
-  const loadHistory = () => {
-    const items = getHistory();
-    setHistory(items);
+  const loadHistory = async () => {
+    // Load from localStorage
+    const localItems = getHistory();
+
+    // Load from Supabase and merge
+    const { data: supabaseItems } = await getAnalysisHistory();
+
+    if (supabaseItems && supabaseItems.length > 0) {
+      // Convert Supabase records to HistoryItem format
+      const remoteItems: HistoryItem[] = supabaseItems.map((item) => ({
+        id: item.id,
+        timestamp: new Date(item.created_at).getTime(),
+        image: item.image_url,
+        predictions: (item.analysis_data?.findings as HistoryItem["predictions"]) || [],
+        healthScore: item.health_score,
+        healthGrade: (item.analysis_data?.healthGrade as string) || "N/A",
+      }));
+
+      // Merge: combine local and remote, remove duplicates by id
+      const localIds = new Set(localItems.map((i) => i.id));
+      const uniqueRemote = remoteItems.filter((i) => !localIds.has(i.id));
+      const merged = [...localItems, ...uniqueRemote].sort(
+        (a, b) => b.timestamp - a.timestamp
+      );
+      setHistory(merged);
+    } else {
+      setHistory(localItems);
+    }
   };
 
   // Re-check history periodically to catch new analyses
