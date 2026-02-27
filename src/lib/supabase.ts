@@ -12,6 +12,25 @@ export interface AnalysisHistory {
   health_score: number;
   primary_condition: string;
   analysis_data: Record<string, unknown>;
+  user_id: string;
+}
+
+const USER_ID_KEY = "dental_user_id";
+
+/**
+ * Returns a persistent anonymous user ID stored in localStorage.
+ * Each browser gets its own ID on first visit, scoping all Supabase
+ * records so users can only see and delete their own data.
+ */
+export function getOrCreateUserId(): string {
+  if (typeof window === "undefined") return "server";
+
+  let userId = localStorage.getItem(USER_ID_KEY);
+  if (!userId) {
+    userId = crypto.randomUUID();
+    localStorage.setItem(USER_ID_KEY, userId);
+  }
+  return userId;
 }
 
 // Save analysis to history
@@ -26,6 +45,8 @@ export async function saveAnalysisToHistory(
     return { data: null, error: null };
   }
 
+  const userId = getOrCreateUserId();
+
   const { data, error } = await supabase
     .from("analysis_history")
     .insert([
@@ -34,6 +55,7 @@ export async function saveAnalysisToHistory(
         health_score: healthScore,
         primary_condition: primaryCondition,
         analysis_data: analysisData,
+        user_id: userId,
       },
     ])
     .select()
@@ -42,7 +64,7 @@ export async function saveAnalysisToHistory(
   return { data, error: error as Error | null };
 }
 
-// Get analysis history
+// Get analysis history — only records belonging to this browser's user
 export async function getAnalysisHistory(): Promise<{
   data: AnalysisHistory[] | null;
   error: Error | null;
@@ -51,13 +73,51 @@ export async function getAnalysisHistory(): Promise<{
     return { data: [], error: null };
   }
 
+  const userId = getOrCreateUserId();
+
   const { data, error } = await supabase
     .from("analysis_history")
     .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(10);
 
   return { data, error: error as Error | null };
+}
+
+// Delete a single analysis record — scoped to current user
+export async function deleteAnalysisFromHistory(
+  id: string
+): Promise<{ error: Error | null }> {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return { error: null };
+  }
+
+  const userId = getOrCreateUserId();
+
+  const { error } = await supabase
+    .from("analysis_history")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId); // prevents deleting another user's record
+
+  return { error: error as Error | null };
+}
+
+// Delete all analysis records for the current user
+export async function clearAnalysisHistory(): Promise<{ error: Error | null }> {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return { error: null };
+  }
+
+  const userId = getOrCreateUserId();
+
+  const { error } = await supabase
+    .from("analysis_history")
+    .delete()
+    .eq("user_id", userId);
+
+  return { error: error as Error | null };
 }
 
 // Upload image to storage
