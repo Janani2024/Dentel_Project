@@ -16,7 +16,7 @@ import {
   formatTimestamp,
   type HistoryItem,
 } from "@/lib/history-storage";
-import { getAnalysisHistory, deleteAnalysisFromHistory, clearAnalysisHistory } from "@/lib/supabase";
+import { getAnalysisHistory } from "@/lib/supabase";
 
 interface HistorySectionProps {
   onSelectHistory: (item: HistoryItem) => void;
@@ -66,20 +66,14 @@ export default function HistorySection({ onSelectHistory }: HistorySectionProps)
     return () => clearInterval(interval);
   }, []);
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    // Remove from localStorage
     deleteHistoryItem(id);
-    // Remove from Supabase
-    await deleteAnalysisFromHistory(id);
     loadHistory();
   };
 
-  const handleClearAll = async () => {
-    // Clear localStorage
+  const handleClearAll = () => {
     clearHistory();
-    // Clear Supabase records for this user
-    await clearAnalysisHistory();
     setHistory([]);
     setShowClearConfirm(false);
   };
