@@ -136,12 +136,12 @@ export default function AnalysisResults({
           transition={{ delay: 0.3 }}
           className="md:col-span-2 report-card rounded-2xl p-4"
         >
-          <div className="aspect-video rounded-xl overflow-hidden bg-slate-950/50 flex items-center justify-center">
+          <div className="rounded-xl overflow-hidden bg-slate-950/50 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imagePreview}
               alt="Analyzed dental image"
-              className="w-full h-full object-contain"
+              className="max-w-full max-h-[400px] object-contain"
             />
           </div>
         </motion.div>
