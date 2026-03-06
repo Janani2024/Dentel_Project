@@ -170,12 +170,12 @@ export default function ImageUpload({
           >
             <div className="relative rounded-2xl overflow-hidden card">
               {/* Preview Image */}
-              <div className="relative flex items-center justify-center bg-gray-50 min-h-[200px]">
+              <div className="relative aspect-[4/3] bg-gray-50 flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={preview}
                   alt="Selected dental image"
-                  className="max-w-full max-h-[500px] object-contain"
+                  className="max-w-full max-h-full object-contain"
                 />
 
                 {/* Scanning overlay when analyzing */}
