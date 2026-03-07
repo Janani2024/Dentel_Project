@@ -3,7 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 export interface AnalysisHistory {
   id: string;
@@ -26,7 +29,7 @@ export async function saveAnalysisToHistory(
     return { data: null, error: null };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from("analysis_history")
     .insert([
       {
@@ -51,7 +54,7 @@ export async function getAnalysisHistory(): Promise<{
     return { data: [], error: null };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from("analysis_history")
     .select("*")
     .order("created_at", { ascending: false })
@@ -71,7 +74,7 @@ export async function uploadImage(
 
   const fileName = `${Date.now()}-${file.name}`;
 
-  const { error } = await supabase.storage
+  const { error } = await supabase!.storage
     .from("dental-images")
     .upload(fileName, file, {
       cacheControl: "3600",
@@ -82,7 +85,7 @@ export async function uploadImage(
     return { url: null, error: error as Error };
   }
 
-  const { data: urlData } = supabase.storage
+  const { data: urlData } = supabase!.storage
     .from("dental-images")
     .getPublicUrl(fileName);
 
