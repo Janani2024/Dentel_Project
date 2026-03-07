@@ -82,50 +82,48 @@ export default function AnalysisResults({
         </p>
       </motion.div>
 
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
         {/* Health Score Card */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="md:col-span-1 report-card rounded-2xl p-6"
+          className="report-card rounded-2xl p-6 flex flex-col items-center justify-center"
         >
-          <div className="text-center">
-            <p className="text-sm text-gray-500 mb-4">Overall Health Score</p>
-            <div className="relative w-32 h-32 mx-auto mb-4">
-              <svg className="w-32 h-32 transform -rotate-90">
-                <circle cx="64" cy="64" r="40" stroke="rgba(255,255,255,0.1)" strokeWidth="8" fill="none" />
-                <motion.circle
-                  cx="64" cy="64" r="40"
-                  stroke="url(#scoreGradient)"
-                  strokeWidth="8" fill="none" strokeLinecap="round"
-                  initial={{ strokeDashoffset: circumference }}
-                  animate={{ strokeDashoffset }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  style={{ strokeDasharray: circumference }}
-                />
-                <defs>
-                  <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor={report.healthScore >= 70 ? "#3b82f6" : "#ef4444"} />
-                    <stop offset="100%" stopColor={report.healthScore >= 70 ? "#2563eb" : "#dc2626"} />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center flex-col">
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.5, type: "spring" }}
-                  className={`text-4xl font-bold ${getScoreColor(report.healthScore)}`}
-                >
-                  {report.healthScore}
-                </motion.span>
-                <span className="text-gray-500 text-xs">/100</span>
-              </div>
+          <p className="text-sm text-gray-500 mb-4">Overall Health Score</p>
+          <div className="relative w-36 h-36 mx-auto mb-4">
+            <svg className="w-36 h-36 transform -rotate-90">
+              <circle cx="72" cy="72" r="40" stroke="rgba(255,255,255,0.1)" strokeWidth="8" fill="none" />
+              <motion.circle
+                cx="72" cy="72" r="40"
+                stroke="url(#scoreGradient)"
+                strokeWidth="8" fill="none" strokeLinecap="round"
+                initial={{ strokeDashoffset: circumference }}
+                animate={{ strokeDashoffset }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                style={{ strokeDasharray: circumference }}
+              />
+              <defs>
+                <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={report.healthScore >= 70 ? "#3b82f6" : "#ef4444"} />
+                  <stop offset="100%" stopColor={report.healthScore >= 70 ? "#2563eb" : "#dc2626"} />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center flex-col">
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.5, type: "spring" }}
+                className={`text-4xl font-bold ${getScoreColor(report.healthScore)}`}
+              >
+                {report.healthScore}
+              </motion.span>
+              <span className="text-gray-500 text-xs">/100</span>
             </div>
-            <div className={`inline-block px-4 py-1.5 rounded-full bg-gradient-to-r ${getScoreGradient(report.healthScore)} text-white text-sm font-medium`}>
-              {report.healthGrade}
-            </div>
+          </div>
+          <div className={`inline-block px-4 py-1.5 rounded-full bg-gradient-to-r ${getScoreGradient(report.healthScore)} text-white text-sm font-medium`}>
+            {report.healthGrade}
           </div>
         </motion.div>
 
@@ -134,14 +132,15 @@ export default function AnalysisResults({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="md:col-span-2 report-card rounded-2xl p-4"
+          className="report-card rounded-2xl p-4 flex items-center justify-center"
         >
-          <div className="aspect-video rounded-xl overflow-hidden bg-gray-900 flex items-center justify-center">
+          <div className="w-full rounded-xl overflow-hidden bg-black flex items-center justify-center" style={{ height: "280px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imagePreview}
               alt="Analyzed dental image"
-              className="w-full h-full object-contain"
+              className="max-w-full max-h-full object-contain"
+              style={{ imageRendering: "auto" }}
             />
           </div>
         </motion.div>
