@@ -134,13 +134,12 @@ export default function AnalysisResults({
           transition={{ delay: 0.3 }}
           className="report-card rounded-2xl p-4 flex items-center justify-center"
         >
-          <div className="w-full rounded-xl overflow-hidden bg-black flex items-center justify-center" style={{ height: "280px" }}>
+          <div className="w-full h-[280px] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imagePreview}
               alt="Analyzed dental image"
-              className="max-w-full max-h-full object-contain"
-              style={{ imageRendering: "auto" }}
+              className="w-full h-full object-contain"
             />
           </div>
         </motion.div>
